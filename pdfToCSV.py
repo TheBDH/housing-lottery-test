@@ -8,13 +8,12 @@ SNAPSHOT_PREFIX = "spring_room_selection_"
 
 def pdf_to_csv(pdf_path: str, publish_date: str, publish_time: str) -> str:
     """Convert one PDF file into a liveData snapshot CSV and return the CSV path."""
-    pdf_file = Path(pdf_path)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     csv_file = OUTPUT_DIR / f"{SNAPSHOT_PREFIX}4_{publish_date}_{publish_time}.csv"
 
-    tables = tabula.read_pdf(str(pdf_file), pages="all", multiple_tables=True)
+    tables = tabula.read_pdf(pdf_path, pages="all", multiple_tables=True)
     if not tables:
-        raise ValueError(f"No tables found in: {pdf_file}")
+        raise ValueError(f"No tables found in: {pdf_path}")
 
     combined = pd.concat(tables, ignore_index=True)
     combined.to_csv(csv_file, index=False)

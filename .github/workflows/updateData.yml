@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       pdf_path:
-        description: 'Path to PDF in repository'
+        description: 'PDF URL on reslife site'
         required: true
         type: string
       publish_date:
