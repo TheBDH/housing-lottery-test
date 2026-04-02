@@ -9,7 +9,7 @@ from collections import defaultdict
 # --- SETTINGS ---
 ### IMPORTANT
 ### Change these to the folder and filename pattern of your snapshot CSVs and change snapshot year to 2026***
-SNAPSHOT_FOLDER = "lotteryData"
+SNAPSHOT_FOLDER = "liveData"
 SNAPSHOT_PREFIX = "spring_room_selection_"
 SNAPSHOT_YEAR = 2026
 
