@@ -14,6 +14,7 @@ def send_ping(message):
         requests.post(WEBHOOK_URL, json={"text": message})
 
 def main():
+    send_ping("TESTING HELLO")
     response = requests.get(URL)
     soup = BeautifulSoup(response.text, 'html.parser')
     
