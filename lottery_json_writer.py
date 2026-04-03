@@ -59,6 +59,22 @@ def normalize_name(name):
     )
 
 
+def get_value(row, header):
+    value = row.get(header)
+    if value is not None:
+        return value
+
+    target = (header or "")[:10].strip().lower()
+    for key, val in row.items():
+        if ((key or "")[:10].strip().lower()) == target:
+            return val
+    return None
+
+
+def get_gender_value(row):
+    return get_value(row, "Room Category") or get_value(row, "Room Gender")
+
+
 def parse_snapshot_time_from_filename(filename, year):
     """
     Expected filename pattern:
@@ -129,11 +145,11 @@ def get_lookup(snapshots):
         with open(snapshot_csv, newline="", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                profile = row.get("Community")
+                profile = get_value(row, "Community")
                 if profile != "Spring General Housing Selection":
                     continue
 
-                building = normalize_name(row.get("Building"))
+                building = normalize_name(get_value(row, "Building"))
                 if building:
                     buildings.add(building)
 
@@ -163,26 +179,26 @@ def process_snapshot(snapshot_csv, building_lookup):
         reader = csv.DictReader(f)
 
         for row in reader:
-            profile = row.get("Community")
+            profile = get_value(row, "Community")
             if profile != "Spring General Housing Selection":
                 continue
 
-            building_name = normalize_name(row.get("Building"))
+            building_name = normalize_name(get_value(row, "Building"))
             if building_name not in building_lookup:
                 print("NOT MATCHED:", building_name)
                 continue
 
             building_id = building_lookup[building_name]
-            base_gender = map_base_gender(row.get("Room Gender"))
+            base_gender = map_base_gender(get_gender_value(row))
             if base_gender is None:
                 continue
 
-            room_type = (row.get("Room Type") or "").strip()
-            room_str = (row.get("Room") or "")
+            room_type = (get_value(row, "Room Type") or "").strip()
+            room_str = (get_value(row, "Room") or "")
 
             # --- Grad Center: non-suite singles ---
             if "GRAD CENTER" in building_name:
-                room_id = (row.get("Room") or "").strip()
+                room_id = (get_value(row, "Room") or "").strip()
                 if not room_id:
                     continue
 
@@ -200,12 +216,12 @@ def process_snapshot(snapshot_csv, building_lookup):
 
             # --- True suites ---
             if "Suite" in room_type:
-                suite_size_raw = (row.get("Suite Size (if applicable)") or "").strip()
-                suite_id = (row.get("Suite") or "").strip()
+                suite_size_raw = (get_value(row, "Suite Size (if applicable)") or "").strip()
+                suite_id = (get_value(row, "Suite") or "").strip()
 
                 # If missing valid suite info, fall back to standard room handling
                 if (not suite_id) or (suite_size_raw == "") or (suite_size_raw.upper() in ("NA", "N/A", "-", "NONE")):
-                    room_id = (row.get("Suite") or "").strip() or (row.get("Room") or "").strip()
+                    room_id = (get_value(row, "Suite") or "").strip() or (get_value(row, "Room") or "").strip()
                     if not room_id:
                         continue
 
@@ -230,7 +246,7 @@ def process_snapshot(snapshot_csv, building_lookup):
                 try:
                     capacity = int(float(suite_size_raw))
                 except ValueError:
-                    print(f"Bad suite size for {building_name} {row.get('Room')}: {suite_size_raw!r}")
+                    print(f"Bad suite size for {building_name} {get_value(row, 'Room')}: {suite_size_raw!r}")
                     continue
 
                 key = (building_id, suite_id, base_gender)
@@ -241,7 +257,7 @@ def process_snapshot(snapshot_csv, building_lookup):
                 continue
 
             # --- Standard non-suite rooms ---
-            room_id = (row.get("Suite") or "").strip() or (row.get("Room") or "").strip()
+            room_id = (get_value(row, "Suite") or "").strip() or (get_value(row, "Room") or "").strip()
             if not room_id:
                 continue
 
@@ -302,25 +318,25 @@ def totals_from_snapshot(snapshot_csv, building_lookup):
         reader = csv.DictReader(f)
 
         for row in reader:
-            profile = row.get("Community")
+            profile = get_value(row, "Community")
             if profile != "Spring General Housing Selection":
                 continue
 
-            building_name = normalize_name(row.get("Building"))
+            building_name = normalize_name(get_value(row, "Building"))
             if building_name not in building_lookup:
                 continue
 
             building_id = building_lookup[building_name]
-            base_gender = map_base_gender(row.get("Room Gender"))
+            base_gender = map_base_gender(get_gender_value(row))
             if base_gender is None:
                 continue
 
-            room_type = (row.get("Room Type") or "").strip()
-            room_str = (row.get("Room") or "")
+            room_type = (get_value(row, "Room Type") or "").strip()
+            room_str = (get_value(row, "Room") or "")
 
             # --- Grad Center: non-suite singles ---
             if "GRAD CENTER" in building_name:
-                room_id = (row.get("Room") or "").strip()
+                room_id = (get_value(row, "Room") or "").strip()
                 if not room_id:
                     continue
 
@@ -340,11 +356,11 @@ def totals_from_snapshot(snapshot_csv, building_lookup):
 
             # --- True suites ---
             if "Suite" in room_type:
-                suite_size_raw = (row.get("Suite Size (if applicable)") or "").strip()
-                suite_id = (row.get("Suite") or "").strip()
+                suite_size_raw = (get_value(row, "Suite Size (if applicable)") or "").strip()
+                suite_id = (get_value(row, "Suite") or "").strip()
 
                 if (not suite_id) or (suite_size_raw == "") or (suite_size_raw.upper() in ("NA", "N/A", "-", "NONE")):
-                    room_id = (row.get("Suite") or "").strip() or (row.get("Room") or "").strip()
+                    room_id = (get_value(row, "Suite") or "").strip() or (get_value(row, "Room") or "").strip()
                     if not room_id:
                         continue
 
@@ -377,7 +393,7 @@ def totals_from_snapshot(snapshot_csv, building_lookup):
                 continue
 
             # --- Standard rooms ---
-            room_id = (row.get("Suite") or "").strip() or (row.get("Room") or "").strip()
+            room_id = (get_value(row, "Suite") or "").strip() or (get_value(row, "Room") or "").strip()
             if not room_id:
                 continue
 
