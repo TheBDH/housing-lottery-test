@@ -1,8 +1,6 @@
 name: Monitor Housing Site
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
