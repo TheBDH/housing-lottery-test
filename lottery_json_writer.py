@@ -16,7 +16,7 @@ SNAPSHOT_YEAR = 2026
 # --- DIMENSION SETTINGS ---
 BASE_GENDERS = ("COED", "MALE", "FEMALE")
 GENDER_GROUPS = ("COED", "COEDMALE", "COEDFEMALE", "ALL")
-SIZE_OPTIONS = ("ALL", 1, 2, 3, 4, 5)
+SIZE_OPTIONS = ("ALL", 1, 2, 3, 4, 5, 6)
 
 # --- HELPERS ---
 def size_label(size_opt):
@@ -129,8 +129,8 @@ def get_lookup(snapshots):
         with open(snapshot_csv, newline="", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                profile = row.get("Room Profile")
-                if profile != "25-26 Spring Selection (Room)":
+                profile = row.get("Community")
+                if profile != "Spring General Housing Selection":
                     continue
 
                 building = normalize_name(row.get("Building"))
@@ -163,8 +163,8 @@ def process_snapshot(snapshot_csv, building_lookup):
         reader = csv.DictReader(f)
 
         for row in reader:
-            profile = row.get("Room Profile")
-            if profile != "25-26 Spring Selection (Room)":
+            profile = row.get("Community")
+            if profile != "Spring General Housing Selection":
                 continue
 
             building_name = normalize_name(row.get("Building"))
@@ -302,8 +302,8 @@ def totals_from_snapshot(snapshot_csv, building_lookup):
         reader = csv.DictReader(f)
 
         for row in reader:
-            profile = row.get("Room Profile")
-            if profile != "25-26 Spring Selection (Room)":
+            profile = row.get("Community")
+            if profile != "Spring General Housing Selection":
                 continue
 
             building_name = normalize_name(row.get("Building"))

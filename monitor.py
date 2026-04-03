@@ -7,6 +7,7 @@ from datetime import datetime
 URL = "https://reslife.brown.edu/housing-selection/selection-resources"
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL") 
 STATE_FILE = "last_link.txt"
+PDF_OUTPUT_DIR = "liveDataPDFs"
 
 def send_ping(message):
     """Sends a push notification to Slack."""
@@ -41,8 +42,9 @@ def main():
     print(f"New PDF found: {pdf_link}")
     pdf_resp = requests.get(pdf_link)
 
+    os.makedirs(PDF_OUTPUT_DIR, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    pdf_filename = f"housing_data_{timestamp}.pdf"
+    pdf_filename = os.path.join(PDF_OUTPUT_DIR, f"housing_data_{timestamp}.pdf")
     
     with open(pdf_filename, 'wb') as f:
         f.write(pdf_resp.content)
