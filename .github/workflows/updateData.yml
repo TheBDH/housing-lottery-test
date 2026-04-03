@@ -50,6 +50,6 @@ jobs:
           if git diff-index --quiet HEAD; then
             echo "No changes to commit. The files were identical or missing."
           else
-            git commit -m "Data Desk Update: Added PDF and parsed data for ${{ inputs.publish_date }} at ${{ inputs.publish_time }}"
+            git commit -m "Added PDF and parsed data for ${{ inputs.publish_date }} at ${{ inputs.publish_time }}"
             git push
           fi
