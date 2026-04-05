@@ -60,7 +60,7 @@ def main():
     with open(STATE_FILE, 'w') as f:
         f.write(pdf_link)
 
-    send_ping(f"HOUSING SPREADSHEET UPDATED. New PDF: {pdf_link}")
+    send_ping(f"<!channel> HOUSING SPREADSHEET UPDATED. New PDF: {pdf_link}")
 
 if __name__ == "__main__":
     main()
