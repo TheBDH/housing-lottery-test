@@ -198,10 +198,9 @@ def process_snapshot(snapshot_csv, building_lookup):
 
             # --- Grad Center: non-suite singles ---
             if "GRAD CENTER" in building_name:
-                room_id = (get_value(row, "Room") or "").strip()
+                room_id = (get_value(row, "Bed") or "").strip()
                 if not room_id:
                     continue
-
                 key = (building_id, room_id, base_gender)
                 if key not in rooms:
                     rooms[key] = {"capacity": 1, "available_beds": 1}
@@ -336,7 +335,7 @@ def totals_from_snapshot(snapshot_csv, building_lookup):
 
             # --- Grad Center: non-suite singles ---
             if "GRAD CENTER" in building_name:
-                room_id = (get_value(row, "Room") or "").strip()
+                room_id = (get_value(row, "Bed") or "").strip()
                 if not room_id:
                     continue
 
