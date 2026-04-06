@@ -1,6 +1,6 @@
 /* COUNTDOWN CODE */
 
-const FORCE_LIVE_MAP = true;
+const FORCE_LIVE_MAP = false;
 const lotteryStartISO = '2026-04-06T00:00:00-04:00'; // April 6 2026, midnight EDT — adjust as needed
 const section = document.getElementById('countdown');
 const target = new Date(section.dataset.target).getTime();
@@ -236,7 +236,7 @@ function initLeafletMap() {
                 onEachFeature: onEachDorm,
             }).addTo(leafletMap);
 
-            updateMap(0);
+            updateMap(currentIndex);
 
             const slider = document.getElementById('housing-live-time-slider');
             slider?.addEventListener('input', function () {
@@ -321,7 +321,7 @@ playBtn?.addEventListener('click', () => {
 });
 
 function fetchHousingData() {
-    return fetch('./housing_output.json')
+    return fetch('./housing_output.json?t=' + Date.now())
         .then((r) => r.json())
         .then((data) => {
             housingData = data;
@@ -330,7 +330,9 @@ function fetchHousingData() {
             const slider = document.getElementById('housing-live-time-slider');
             if (slider) {
                 slider.max = String(Math.max(timestamps.length - 1, 0));
-                slider.value = String(Math.min(currentIndex, Math.max(timestamps.length - 1, 0)));
+                currentIndex = timestamps.length - 1;
+                slider.value = String(currentIndex);
+                updateMap(currentIndex);
             }
 
             updateLegend();
