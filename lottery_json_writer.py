@@ -205,7 +205,7 @@ def process_snapshot(snapshot_csv, building_lookup):
                 if key not in rooms:
                     rooms[key] = {"capacity": 1, "available_beds": 1}
                 continue
-
+            
             # --- Greg A 125: treat as one suite-like 9-person unit ---
             # if "GREG A 125" in room_str:
             #     key = (building_id, "GREG A 125", base_gender)
@@ -217,6 +217,9 @@ def process_snapshot(snapshot_csv, building_lookup):
             if "Suite" in room_type:
                 suite_size_raw = (get_value(row, "Suite Size (if applicable)") or "").strip()
                 suite_id = (get_value(row, "Suite") or "").strip()
+
+                if building_name == "MINDEN HALL" and suite_id == "MINDEN 113":
+                    suite_size_raw = "4"
 
                 # If missing valid suite info, fall back to standard room handling
                 if (not suite_id) or (suite_size_raw == "") or (suite_size_raw.upper() in ("NA", "N/A", "-", "NONE")):
@@ -357,6 +360,9 @@ def totals_from_snapshot(snapshot_csv, building_lookup):
             if "Suite" in room_type:
                 suite_size_raw = (get_value(row, "Suite Size (if applicable)") or "").strip()
                 suite_id = (get_value(row, "Suite") or "").strip()
+
+                if building_name == "MINDEN HALL" and suite_id == "MINDEN 113":
+                    suite_size_raw = "4"
 
                 if (not suite_id) or (suite_size_raw == "") or (suite_size_raw.upper() in ("NA", "N/A", "-", "NONE")):
                     room_id = (get_value(row, "Suite") or "").strip() or (get_value(row, "Room") or "").strip()
